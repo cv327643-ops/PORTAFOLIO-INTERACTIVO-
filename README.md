@@ -81,3 +81,8 @@ Busca "TODO" dentro de `index.html`:
 3. Endurecimiento de seguridad y escalabilidad: CSP, `noopener noreferrer`, semántica, lazy loading, SEO/OG, favicon embebido, remoción de la nota interna visible.
 4. Alineado con Railway: se reemplazan `_headers`/`vercel.json` (Netlify/Vercel) por un `Caddyfile` — el mecanismo real que usa Railway para servir sitios estáticos y fijar cabeceras de seguridad.
 5. Imágenes embebidas como `data:` URI directamente en `index.html`, para que dejen de depender de que la carpeta `assets/` se suba/despliegue correctamente por separado.
+6. Sección "Marcas con las que hemos trabajado": los logos reales (extraídos del portafolio en PDF) reemplazan las etiquetas de texto. Se renderizan de forma dinámica desde un arreglo `brandLogos` en JS (mismo patrón del componente `LogoCloud` que compartiste), en una cinta con scroll infinito que se pausa al pasar el mouse.
+
+### Nota sobre un logo sin nombre
+
+Entre los logos extraídos hay uno (círculo neón morado, cuarto de la última fila en la página de marcas del PDF) sin texto legible — no encontré su nombre en ningún lado del portafolio. Lo dejé con el alt `"Cliente Neomech"` como placeholder. Si me dices qué marca es, actualizo el `alt` (bueno para accesibilidad y SEO).
