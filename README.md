@@ -6,10 +6,14 @@ Landing interactiva de Neomech 3D (diseño, ingeniería y fabricación digital c
 
 ```
 neomech-landing/
-├── index.html      → la página completa (HTML + CSS + JS en un solo archivo)
-├── assets/         → fotos reales del portafolio
+├── index.html      → la página completa: HTML + CSS + JS + IMÁGENES, todo en un solo archivo
+├── assets/         → fotos originales (se conservan como archivo fuente, ya no las usa la página)
 └── Caddyfile       → configuración del servidor + cabeceras de seguridad (Railway)
 ```
+
+**Las imágenes ya no son archivos aparte.** Están embebidas dentro de `index.html` como `data:image/jpeg;base64,...` en cada `<img>`. Esto se hizo para resolver que las imágenes no cargaban al desplegar — evita depender de que la carpeta `assets/` se suba completa y con las rutas relativas intactas: con `index.html` solo, ya funciona todo. La carpeta `assets/` se deja en el repo únicamente como respaldo de las fotos originales, por si necesitas reemplazar alguna en el futuro.
+
+Contrapartida: al embeber las imágenes, `index.html` pesa ~2.3 MB (antes pesaba ~46 KB y las fotos se cargaban aparte). Caddy comprime con gzip/zstd en tránsito, así que el peso real que viaja por la red es menor, pero si más adelante quieres aligerar el sitio, se puede optimizar comprimiendo las fotos o volviendo a servirlas como archivos aparte una vez confirmemos que las rutas quedan bien configuradas.
 
 ## Por qué hay un Caddyfile
 
@@ -76,3 +80,4 @@ Busca "TODO" dentro de `index.html`:
 2. Fondo animado tipo grid generativo en el Hero (primera impresión al entrar).
 3. Endurecimiento de seguridad y escalabilidad: CSP, `noopener noreferrer`, semántica, lazy loading, SEO/OG, favicon embebido, remoción de la nota interna visible.
 4. Alineado con Railway: se reemplazan `_headers`/`vercel.json` (Netlify/Vercel) por un `Caddyfile` — el mecanismo real que usa Railway para servir sitios estáticos y fijar cabeceras de seguridad.
+5. Imágenes embebidas como `data:` URI directamente en `index.html`, para que dejen de depender de que la carpeta `assets/` se suba/despliegue correctamente por separado.
