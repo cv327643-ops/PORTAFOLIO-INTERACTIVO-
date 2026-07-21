@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neomech 3D — La ingeniería detrás de cada capa</title>
+<style>
+  :root{
+    --bg:#07090A;
+    --panel:#0F1416;
+    --panel2:#12191C;
+    --line:#1E2A2E;
+    --accent:#1AA8CC;
+    --accent-light:#6FE3F5;
+    --text:#F2F6F7;
+    --muted:#9FB0B5;
+    --whatsapp:#25D366;
+    --whatsapp-dark:#1CAE54;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Segoe UI',Arial,sans-serif;color:var(--text);background:var(--bg);line-height:1.6;}
+  h1,h2,h3{font-weight:800;color:var(--text);}
+  a{text-decoration:none;color:inherit;}
+  img{max-width:100%;display:block;}
+  .container{max-width:1120px;margin:0 auto;padding:0 24px;}
+  .eyebrow{display:inline-block;font-size:12px;letter-spacing:2.5px;text-transform:uppercase;color:var(--accent-light);font-weight:700;margin-bottom:14px;}
+  .icon{width:20px;height:20px;stroke:var(--accent-light);vertical-align:-4px;margin-right:6px;}
+  .icon-lg{width:30px;height:30px;stroke:var(--accent-light);}
+
+  .bars{display:inline-flex;gap:3px;vertical-align:middle;}
+  .bars span{width:5px;height:22px;border-radius:2px;}
+  .bars span:nth-child(1){background:#4b5a5e;}
+  .bars span:nth-child(2){background:#7fbfd1;}
+  .bars span:nth-child(3){background:var(--accent);}
+  .bars span:nth-child(4){background:var(--accent-light);}
+  .bars span:nth-child(5){background:#e7f7fa;}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(7,9,10,0.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line);}
+  header .container{display:flex;align-items:center;justify-content:space-between;height:70px;}
+  .logo{font-size:19px;font-weight:800;letter-spacing:1px;color:var(--text);}
+  .logo span{color:var(--accent-light);}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:14px 28px;border-radius:8px;font-weight:700;font-size:15px;cursor:pointer;border:none;transition:transform .15s ease;}
+  .btn:hover{transform:translateY(-2px);}
+  .btn-whatsapp{background:linear-gradient(90deg,var(--whatsapp),var(--whatsapp-dark));color:#fff;box-shadow:0 8px 24px rgba(37,211,102,0.4);}
+  .btn-outline{background:transparent;color:var(--accent-light);border:1.5px solid var(--accent);padding:12.5px 26px;}
+  header .btn{padding:10px 18px;font-size:14px;}
+  .cta-secondary-link{font-size:13.5px;color:var(--muted);display:block;margin-top:12px;}
+  .cta-secondary-link a{color:var(--accent-light);text-decoration:underline;}
+
+  .hero{position:relative;overflow:hidden;background:radial-gradient(ellipse at 70% 20%, rgba(26,168,204,0.14), transparent 60%), var(--bg);padding:90px 0 70px;border-bottom:1px solid var(--line);}
+  .hero-grid-bg{position:absolute;inset:0;z-index:0;overflow:hidden;}
+  .grid-canvas{position:absolute;inset:-20px;display:grid;-webkit-mask-image:radial-gradient(ellipse 85% 85% at 60% 35%, black 35%, transparent 85%);mask-image:radial-gradient(ellipse 85% 85% at 60% 35%, black 35%, transparent 85%);}
+  .grid-cell{background:var(--accent);border-radius:2px;opacity:var(--opacity-min,0.04);animation:cell-pulse 5s ease-in-out infinite alternate;}
+  @keyframes cell-pulse{0%{opacity:var(--opacity-min,0.04);}100%{opacity:var(--opacity-max,0.5);}}
+  .hero-grid-bg::after{content:"";position:absolute;inset:0;background:radial-gradient(320px circle at var(--mouse-x,65%) var(--mouse-y,15%), rgba(111,227,245,0.25), transparent 70%);pointer-events:none;transition:opacity .4s;}
+  @media (prefers-reduced-motion: reduce){ .grid-cell{animation:none;opacity:0.1;} }
+  .hero-grid{position:relative;z-index:1;display:grid;grid-template-columns:1.05fr 1fr;gap:56px;align-items:center;}
+  .hero h1{font-size:46px;line-height:1.14;margin-bottom:18px;}
+  .hero h1 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent-light));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .hero p{font-size:18px;color:var(--muted);margin-bottom:30px;max-width:500px;}
+  .hero-ctas{display:flex;gap:16px;flex-wrap:wrap;align-items:center;}
+  .media-frame{border-radius:18px;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 50px rgba(0,0,0,0.5);position:relative;}
+  .media-frame img{width:100%;height:100%;object-fit:cover;}
+
+  .section{padding:84px 0;}
+  .section-alt{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .section-head{max-width:660px;margin:0 auto 48px;text-align:center;}
+  .section-head h2{font-size:32px;margin-bottom:14px;}
+  .section-head p{color:var(--muted);font-size:17px;}
+
+  .mid-cta{text-align:center;margin-top:44px;padding-top:36px;border-top:1px solid var(--line);}
+  .mid-cta p{font-size:17px;margin-bottom:16px;color:var(--text);font-weight:700;}
+
+  .about-block{display:grid;grid-template-columns:1fr 1fr;gap:50px;align-items:center;}
+  .about-block h2{font-size:30px;margin-bottom:18px;}
+  .about-block p{color:var(--muted);font-size:16px;margin-bottom:14px;}
+  .about-block .highlight{color:var(--accent-light);font-weight:700;}
+  .about-block .closing{color:var(--text);font-weight:700;font-size:18px;margin-top:18px;}
+  .about-media{display:grid;gap:16px;}
+  .about-media .media-frame img{height:100%;}
+
+  .sector-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .sector-card{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel2);}
+  .sector-media{height:150px;overflow:hidden;}
+  .sector-media img{width:100%;height:100%;object-fit:cover;}
+  .sector-body{padding:18px;}
+  .sector-body h3{font-size:15.5px;margin-bottom:6px;color:var(--accent-light);display:flex;align-items:center;}
+  .sector-body p{font-size:13px;color:var(--muted);}
+
+  .problem-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:18px;}
+  .problem-card{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:12px;padding:26px;}
+  .problem-card h3{font-size:17px;margin-bottom:10px;}
+  .problem-card p{color:var(--muted);font-size:15px;}
+
+  .process-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;}
+  .process-step{text-align:center;padding:0 8px;}
+  .process-step .num{width:46px;height:46px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-light));color:#031316;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px;margin:0 auto 16px;}
+  .process-step h3{font-size:16px;margin-bottom:8px;}
+  .process-step p{font-size:13.5px;color:var(--muted);}
+
+  .filters{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:34px;}
+  .filter-btn{padding:9px 18px;border-radius:24px;border:1.5px solid var(--line);background:var(--panel2);color:var(--text);font-size:13.5px;font-weight:700;cursor:pointer;}
+  .filter-btn.active{background:var(--accent);border-color:var(--accent);color:#031316;}
+  .gallery-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;}
+  .gallery-card{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel2);}
+  .gallery-card img{height:150px;width:100%;object-fit:cover;}
+  .gallery-cap{padding:12px 14px;font-size:12.5px;color:var(--muted);font-weight:700;}
+
+  .case-card{border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--panel2);margin-bottom:28px;}
+  .case-media-pair{display:grid;grid-template-columns:1fr 1fr;}
+  .case-media-pair img{width:100%;height:260px;object-fit:cover;}
+  .case-body{padding:32px;}
+  .case-body .eyebrow{margin-bottom:8px;}
+  .case-body h3{font-size:22px;margin-bottom:16px;}
+  .case-body h4{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--accent-light);margin:14px 0 6px;}
+  .case-body p{color:var(--muted);font-size:15px;}
+  .case-body ul{color:var(--muted);font-size:14.5px;padding-left:18px;margin-top:4px;}
+
+  .diff-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;}
+  .diff-card{padding:24px;border:1px solid var(--line);border-radius:12px;background:var(--panel2);text-align:center;}
+  .diff-card h3{font-size:15.5px;margin:10px 0 8px;}
+  .diff-card p{font-size:13.5px;color:var(--muted);}
+
+  .brands-strip{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;}
+  .brand-badge{padding:10px 20px;border:1px solid var(--line);border-radius:24px;font-size:14px;font-weight:700;color:var(--muted);background:var(--panel2);}
+
+  .pricing-grid{display:grid;grid-template-columns:1.3fr 1fr;gap:30px;align-items:start;}
+  .pricing-factors{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .factor{padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);font-size:14px;color:var(--muted);}
+  .factor b{color:var(--text);display:block;margin-bottom:4px;font-size:14.5px;}
+  .fee-box{background:linear-gradient(160deg, rgba(26,168,204,0.15), rgba(26,168,204,0.03));border:1px solid var(--accent);border-radius:14px;padding:26px;}
+  .fee-box h3{font-size:18px;margin-bottom:10px;color:var(--accent-light);}
+  .fee-box p{font-size:14.5px;color:var(--muted);margin-bottom:10px;}
+  .fee-note{font-size:12.5px;color:#6C8489;border-top:1px dashed var(--line);margin-top:14px;padding-top:10px;}
+
+  .cta-band{background:linear-gradient(120deg,#0B2A33,#07090A);padding:60px 0;text-align:center;border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+  .cta-band h2{font-size:28px;margin-bottom:22px;}
+
+  details{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden;background:var(--panel2);}
+  summary{padding:18px 22px;font-weight:700;font-size:15.5px;cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+";font-size:22px;color:var(--accent-light);font-weight:400;}
+  details[open] summary::after{content:"–";}
+  details[open] summary{border-bottom:1px solid var(--line);}
+  .faq-answer{padding:18px 22px;color:var(--muted);font-size:14.5px;}
+  .faq-group-title{font-size:13px;text-transform:uppercase;letter-spacing:1.5px;color:var(--accent-light);font-weight:700;margin:32px 0 14px;}
+  .faq-group-title:first-child{margin-top:0;}
+
+  .final-cta{padding:84px 0;text-align:center;}
+  .final-cta h2{font-size:32px;margin-bottom:16px;}
+  .final-cta p{color:var(--muted);font-size:16.5px;max-width:560px;margin:0 auto 32px;}
+  .whatsapp-highlight{max-width:480px;margin:0 auto;padding:40px;border:1px solid var(--accent);border-radius:20px;background:linear-gradient(160deg, rgba(37,211,102,0.1), rgba(26,168,204,0.05));}
+  .brief-alt{margin-top:40px;padding-top:30px;border-top:1px solid var(--line);}
+  .brief-frame-wrap{max-width:700px;margin:16px auto 0;border:1px solid var(--line);border-radius:16px;overflow:hidden;}
+  .brief-frame-placeholder{background:var(--panel2);padding:44px 30px;text-align:center;color:var(--muted);font-size:14px;}
+
+  footer{background:#000;color:var(--muted);padding:44px 0;text-align:center;font-size:14px;border-top:1px solid var(--line);}
+  footer .logo{color:var(--text);margin-bottom:12px;font-size:20px;}
+  footer .contact-row{display:flex;justify-content:center;gap:26px;flex-wrap:wrap;margin:16px 0;font-size:14px;}
+
+  .whatsapp-float{position:fixed;bottom:24px;right:24px;background:var(--whatsapp);color:#fff;width:62px;height:62px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 26px rgba(37,211,102,0.55);z-index:60;}
+  .whatsapp-float svg{width:30px;height:30px;fill:#fff;}
+
+  @media(max-width:900px){
+    .hero-grid,.about-block,.case-grid{grid-template-columns:1fr;}
+    .sector-grid,.problem-grid,.process-grid,.diff-grid,.gallery-grid{grid-template-columns:repeat(2,1fr);}
+    .case-media-pair{grid-template-columns:1fr;}
+    .pricing-grid{grid-template-columns:1fr;}
+    .hero h1{font-size:34px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div class="logo">NEO<span>MECH</span> 3D</div>
+    <a class="btn btn-whatsapp" href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20contarles%20sobre%20un%20proyecto" target="_blank">💬 Escríbenos por WhatsApp</a>
+  </div>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-grid-bg" aria-hidden="true"><div class="grid-canvas" id="gridCanvas"></div></div>
+  <div class="container hero-grid">
+    <div>
+      <span class="bars"><span></span><span></span><span></span><span></span><span></span></span>
+      <span class="eyebrow" style="margin-left:10px;">Diseño · Ingeniería · Fabricación digital</span>
+      <h1>La ingeniería <em>detrás de cada capa</em></h1>
+      <p>En Neomech 3D combinamos diseño, ingeniería y fabricación digital para transformar ideas en productos funcionales. No es solo impresión 3D — es ingeniería aplicada a cada proyecto.</p>
+      <div class="hero-ctas">
+        <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20contarles%20sobre%20un%20proyecto" target="_blank" class="btn btn-whatsapp">💬 Escríbenos por WhatsApp</a>
+      </div>
+      <span class="cta-secondary-link">¿Prefieres escribirlo con calma? <a href="#minibrief">Completa el mini brief</a></span>
+    </div>
+    <div class="media-frame">
+      <img src="assets/hero-printer.jpg" alt="Impresora 3D Neomech">
+    </div>
+  </div>
+</section>
+
+<!-- ============ PROBLEMA / SOLUCIÓN ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">¿Esto es para ti?</span>
+      <h2>Nuestras soluciones</h2>
+      <p>Antes de hablarte de nosotros, hablemos de lo que probablemente te trajo hasta aquí.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <h3>¿Necesitas desarrollar un producto desde cero?</h3>
+        <p><b style="color:var(--text)">Solución:</b> diseño y modelado 3D personalizado. Convertimos tu idea en un modelo técnico listo para fabricar.</p>
+      </div>
+      <div class="problem-card">
+        <h3>¿Quieres probar tu producto antes de invertir en producción masiva?</h3>
+        <p>Fabricamos versiones reales para validar forma, ajuste y funcionamiento.</p>
+      </div>
+      <div class="problem-card">
+        <h3>¿Requieres piezas personalizadas que no se consiguen en el mercado?</h3>
+        <p><b style="color:var(--text)">Solución:</b> fabricación a medida. Producimos piezas únicas o en series cortas sin necesidad de moldes.</p>
+      </div>
+      <div class="problem-card">
+        <h3>¿Tu pieza actual puede mejorar en desempeño o reducir costos?</h3>
+        <p><b style="color:var(--text)">Solución:</b> rediseño y optimización. Analizamos y mejoramos componentes existentes.</p>
+      </div>
+    </div>
+    <div class="mid-cta">
+      <p>¿Te identificas con alguno de estos casos?</p>
+      <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20tengo%20un%20proyecto%20que%20se%20parece%20a%20uno%20de%20los%20casos%20de%20su%20p%C3%A1gina" target="_blank" class="btn btn-whatsapp">💬 Cuéntanoslo por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ QUIÉNES SOMOS ============ -->
+<section class="section section-alt">
+  <div class="container about-block">
+    <div>
+      <span class="eyebrow">Quiénes somos</span>
+      <h2>Transformamos ideas en soluciones reales</h2>
+      <p>En <span class="highlight">Neomech 3D</span> acompañamos a empresas, pymes, startups y emprendedores en el desarrollo de soluciones técnicas mediante ingeniería, diseño y manufactura aditiva.</p>
+      <p><span class="highlight">Analizamos cada necesidad</span>, estructuramos la mejor alternativa y la materializamos con impresión 3D de alta precisión.</p>
+      <p>Trabajamos desde nuestro propio taller en Medellín, Colombia — diseñamos, calculamos y producimos cada pieza sin subcontratar la parte de ingeniería.</p>
+      <p class="closing">No es solo impresión 3D. Es ingeniería aplicada a cada proyecto.</p>
+    </div>
+    <div class="media-frame">
+      <img src="assets/oficina-neomech.jpg" alt="Taller Neomech 3D en Medellín">
+    </div>
+  </div>
+</section>
+
+<!-- ============ SECTORES ============ -->
+<section class="section" id="portafolio">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">A quién acompañamos</span>
+      <h2>Acompañamos a marcas en sectores como</h2>
+    </div>
+    <div class="sector-grid">
+      <div class="sector-card">
+        <div class="sector-media"><img src="assets/sector-empresarial.jpg" alt="Empresarial"></div>
+        <div class="sector-body"><h3><svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 18a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13.5 1.7 1.7 0 0 0 3 12.46h-.1a2 2 0 1 1 0-4H3A1.7 1.7 0 0 0 4.6 7.5a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 3.4h.09A1.7 1.7 0 0 0 10.46 2h0a2 2 0 1 1 4 0h0A1.7 1.7 0 0 0 15.99 3.4H16a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 20.4 7.5c.14.6.62 1.06 1.24 1.16h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.24 1.84Z" stroke="currentColor" stroke-width="1.3"/></svg>Empresarial</h3><p>Productos personalizados · Publicidad · Merchandising</p></div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-media"><img src="assets/sector-industrial.jpg" alt="Industrial"></div>
+        <div class="sector-body"><h3><svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 18a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13.5 1.7 1.7 0 0 0 3 12.46h-.1a2 2 0 1 1 0-4H3A1.7 1.7 0 0 0 4.6 7.5a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 3.4h.09A1.7 1.7 0 0 0 10.46 2h0a2 2 0 1 1 4 0h0A1.7 1.7 0 0 0 15.99 3.4H16a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 20.4 7.5c.14.6.62 1.06 1.24 1.16h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.24 1.84Z" stroke="currentColor" stroke-width="1.3"/></svg>Industrial</h3><p>Piezas técnicas · Refacciones · Soluciones funcionales</p></div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-media"><img src="assets/sector-emprendimiento.jpg" alt="Emprendimiento"></div>
+        <div class="sector-body"><h3><svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 18a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13.5 1.7 1.7 0 0 0 3 12.46h-.1a2 2 0 1 1 0-4H3A1.7 1.7 0 0 0 4.6 7.5a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 3.4h.09A1.7 1.7 0 0 0 10.46 2h0a2 2 0 1 1 4 0h0A1.7 1.7 0 0 0 15.99 3.4H16a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 20.4 7.5c.14.6.62 1.06 1.24 1.16h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.24 1.84Z" stroke="currentColor" stroke-width="1.3"/></svg>Emprendimiento</h3><p>Prototipado · Validación de producto · Desarrollo de marca</p></div>
+      </div>
+      <div class="sector-card">
+        <div class="sector-media"><img src="assets/sector-marketing.jpg" alt="Marketing"></div>
+        <div class="sector-body"><h3><svg class="icon" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 18a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13.5 1.7 1.7 0 0 0 3 12.46h-.1a2 2 0 1 1 0-4H3A1.7 1.7 0 0 0 4.6 7.5a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 3.4h.09A1.7 1.7 0 0 0 10.46 2h0a2 2 0 1 1 4 0h0A1.7 1.7 0 0 0 15.99 3.4H16a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 20.4 7.5c.14.6.62 1.06 1.24 1.16h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.24 1.84Z" stroke="currentColor" stroke-width="1.3"/></svg>Marketing</h3><p>Material POP · Exhibidores · Activaciones de marca</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CÓMO TRABAJAMOS ============ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Cómo trabajamos</span>
+      <h2>De tu idea a la pieza entregada</h2>
+    </div>
+    <div class="process-grid">
+      <div class="process-step"><div class="num">1</div><h3>Diseño 3D a Medida</h3><p>Compartes tu archivo (.STL, .OBJ, .STEP). Si no tienes diseño, lo desarrollamos en CAD desde cero.</p></div>
+      <div class="process-step"><div class="num">2</div><h3>Cotización Personalizada</h3><p>Propuesta ajustada según dimensiones, material, cantidad, nivel de detalle y tiempo de entrega.</p></div>
+      <div class="process-step"><div class="num">3</div><h3>Producción</h3><p>Impresión 3D en PLA, PETG o TPU, con control de calidad para asegurar precisión y acabado.</p></div>
+      <div class="process-step"><div class="num">4</div><h3>Entrega final</h3><p>Recogida en sede en Medellín o envío a domicilio a nivel nacional.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ GALERÍA INTERACTIVA ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Portafolio</span>
+      <h2>Proyectos reales, por categoría</h2>
+      <p>Filtra por el tipo de proyecto que más se parece al tuyo.</p>
+    </div>
+    <div class="filters">
+      <button class="filter-btn active" data-filter="all">Todos</button>
+      <button class="filter-btn" data-filter="empresarial">Empresarial</button>
+      <button class="filter-btn" data-filter="industrial">Industrial</button>
+      <button class="filter-btn" data-filter="emprendimiento">Emprendimiento</button>
+      <button class="filter-btn" data-filter="marketing">Marketing</button>
+    </div>
+    <div class="gallery-grid" id="galleryGrid">
+      <div class="gallery-card" data-category="empresarial"><img src="assets/sector-empresarial.jpg" alt="Llavero personalizado Yümi Party"><div class="gallery-cap">Llavero personalizado · Yümi Party</div></div>
+      <div class="gallery-card" data-category="industrial"><img src="assets/sector-industrial.jpg" alt="Soporte industrial"><div class="gallery-cap">Soporte técnico industrial</div></div>
+      <div class="gallery-card" data-category="emprendimiento"><img src="assets/sector-emprendimiento.jpg" alt="Topper decorativo"><div class="gallery-cap">Topper de producto · Emprendimiento</div></div>
+      <div class="gallery-card" data-category="marketing"><img src="assets/sector-marketing.jpg" alt="Pegboard expositor"><div class="gallery-cap">Panel expositor · Marketing</div></div>
+      <div class="gallery-card" data-category="marketing"><img src="assets/caso-lavish-1.jpg" alt="Producto Lavish"><div class="gallery-cap">Experiencia de marca · Lavish</div></div>
+      <div class="gallery-card" data-category="empresarial"><img src="assets/caso-lavish-2.jpg" alt="Producto Lavish detalle"><div class="gallery-cap">Producto de conversión · Lavish</div></div>
+      <div class="gallery-card" data-category="industrial"><img src="assets/caso-joyeria-1.jpg" alt="Piezas para joyería"><div class="gallery-cap">Estructuras a medida · Joyería</div></div>
+      <div class="gallery-card" data-category="empresarial"><img src="assets/caso-joyeria-2.jpg" alt="Vitrina de joyería"><div class="gallery-cap">Optimización de vitrina · Joyería</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CASOS DESTACADOS ============ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Proyectos destacados</span>
+      <h2>De la necesidad a la solución</h2>
+      <p>Algunos de los proyectos que hemos desarrollado muestran cómo aplicamos diseño, ingeniería y fabricación digital para resolver necesidades reales.</p>
+    </div>
+
+    <div class="case-card">
+      <div class="case-media-pair">
+        <img src="assets/caso-lavish-1.jpg" alt="Producto Lavish">
+        <img src="assets/caso-lavish-2.jpg" alt="Producto Lavish detalle">
+      </div>
+      <div class="case-body">
+        <span class="eyebrow">Marketing · Empresarial</span>
+        <h3>Producto de conversión para experiencia de marca</h3>
+        <h4>Desafío</h4>
+        <p>Generar recordación y conexión con clientes en interacciones físicas de corta duración.</p>
+        <h4>Solución</h4>
+        <p>Producto portátil con muestra real del producto y diseño personalizado que prolonga la experiencia y la interacción digital de marca.</p>
+        <h4>Proceso</h4>
+        <ul><li>Diseño conceptual</li><li>Desarrollo de prototipos</li><li>Validación de funcionalidad</li><li>Producción final</li></ul>
+      </div>
+    </div>
+
+    <div class="case-card">
+      <div class="case-media-pair">
+        <img src="assets/caso-joyeria-1.jpg" alt="Piezas para joyería">
+        <img src="assets/caso-joyeria-2.jpg" alt="Vitrina de joyería">
+      </div>
+      <div class="case-body">
+        <span class="eyebrow">Industrial · Empresarial</span>
+        <h3>Optimización de vitrina para joyería</h3>
+        <h4>Desafío</h4>
+        <p>La joyería necesitaba mejorar la organización de su vitrina.</p>
+        <h4>Solución</h4>
+        <p>Diseñamos estructuras personalizadas para cada tipo de joya.</p>
+        <h4>Proceso</h4>
+        <ul><li>Visita y medición</li><li>Prototipos</li><li>Validación</li><li>Producción</li></ul>
+      </div>
+    </div>
+
+    <div class="mid-cta">
+      <p>¿Buscas un resultado así para tu marca?</p>
+      <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20me%20gust%C3%B3%20uno%20de%20sus%20proyectos%20y%20quiero%20contarles%20el%20m%C3%ADo" target="_blank" class="btn btn-whatsapp">💬 Empecemos por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ POR QUÉ NEOMECH ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Por qué Neomech</span>
+      <h2>No solo imprimimos tu archivo</h2>
+    </div>
+    <div class="diff-grid">
+      <div class="diff-card"><svg class="icon-lg" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Funcionalidad real</h3><p>Cada pieza cumple un propósito técnico.</p></div>
+      <div class="diff-card"><svg class="icon-lg" viewBox="0 0 24 24" fill="none"><path d="M17 2l4 4-4 4M3 12v-2a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 12v2a4 4 0 0 1-4 4H3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><h3>Producción flexible</h3><p>Sin moldes ni grandes inversiones.</p></div>
+      <div class="diff-card"><svg class="icon-lg" viewBox="0 0 24 24" fill="none"><path d="M12 2v20M2 12h20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg><h3>Optimización de costos</h3><p>Fabricación eficiente en series cortas.</p></div>
+      <div class="diff-card"><svg class="icon-lg" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="currentColor" stroke-width="1.6"/><path d="M19.4 13.5a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.04 1.56V19.6a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.96 18a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 13.5 1.7 1.7 0 0 0 3 12.46h-.1a2 2 0 1 1 0-4H3A1.7 1.7 0 0 0 4.6 7.5a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 3.4h.09A1.7 1.7 0 0 0 10.46 2h0a2 2 0 1 1 4 0h0A1.7 1.7 0 0 0 15.99 3.4H16a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 20.4 7.5c.14.6.62 1.06 1.24 1.16h.1a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.24 1.84Z" stroke="currentColor" stroke-width="1.3"/></svg><h3>Ingeniería aplicada</h3><p>Análisis previo en cada proyecto.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ COTIZACIÓN Y FEE DE DISEÑO ============ -->
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Cómo se cotiza tu proyecto</span>
+      <h2>Transparencia desde el primer contacto</h2>
+    </div>
+    <div class="pricing-grid">
+      <div>
+        <div class="pricing-factors">
+          <div class="factor"><b>Dimensiones</b>Tamaño y complejidad de la pieza.</div>
+          <div class="factor"><b>Material</b>PLA, PETG, TPU u otro según el uso.</div>
+          <div class="factor"><b>Cantidad</b>Unidad, lote corto o producción.</div>
+          <div class="factor"><b>Nivel de detalle</b>Acabado, tolerancias, ajuste.</div>
+          <div class="factor" style="grid-column:span 2;"><b>Tiempo de entrega</b>Según la complejidad y la cola de producción activa.</div>
+        </div>
+      </div>
+      <div class="fee-box">
+        <h3>Fee de diseño</h3>
+        <p>Cuando el proyecto requiere diseño o ingeniería (no solo imprimir un archivo ya listo), cobramos un fee de diseño separado del costo de producción.</p>
+        <p>Cubre el cálculo, el modelado y la validación técnica de la pieza — con o sin producción final.</p>
+        <div class="fee-note">Nota interna: definir aquí el monto o rango real del fee según complejidad antes de publicar.</div>
+      </div>
+    </div>
+    <div class="mid-cta">
+      <p>¿Ya sabes qué necesitas?</p>
+      <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20una%20cotizaci%C3%B3n%20para%20mi%20proyecto" target="_blank" class="btn btn-whatsapp">💬 Pide tu cotización por WhatsApp</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ MARCAS ============ -->
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="eyebrow">Confían en nosotros</span>
+      <h2>Marcas con las que hemos trabajado</h2>
+    </div>
+    <div class="brands-strip">
+      <span class="brand-badge">AIÓN</span>
+      <span class="brand-badge">Buo Atelier Boulangerie</span>
+      <span class="brand-badge">La Buena Vida</span>
+      <span class="brand-badge">ECR Entorno Capital Raíz</span>
+      <span class="brand-badge">Madwaxx</span>
+      <span class="brand-badge">Grupo Dior S.A.S</span>
+      <span class="brand-badge">Beré Pureza Cafetera</span>
+      <span class="brand-badge">Kivval</span>
+      <span class="brand-badge">Piedrangular</span>
+      <span class="brand-badge">Yümi Party</span>
+      <span class="brand-badge">Lavish</span>
+      <span class="brand-badge">Petalia</span>
+      <span class="brand-badge">Fedelé Mascotas</span>
+      <span class="brand-badge">Lure</span>
+      <span class="brand-badge">Amparo Aguirre Arenas · Smile Experts</span>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA BAND ============ -->
+<section class="cta-band">
+  <div class="container">
+    <span class="bars"><span></span><span></span><span></span><span></span><span></span></span>
+    <h2 style="margin-top:16px;">¿Tienes un proyecto en mente?</h2>
+    <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20contarles%20sobre%20un%20proyecto" target="_blank" class="btn btn-whatsapp">💬 Escríbenos por WhatsApp</a>
+    <span class="cta-secondary-link">o <a href="#minibrief">completa el mini brief</a></span>
+  </div>
+</section>
+
+<!-- ============ FAQ ============ -->
+<section class="section" id="faq">
+  <div class="container" style="max-width:820px;">
+    <div class="section-head">
+      <span class="eyebrow">Preguntas frecuentes</span>
+      <h2>Todo lo que necesitas saber antes de escribirnos</h2>
+    </div>
+
+    <p class="faq-group-title">Sobre tu problema</p>
+    <details>
+      <summary>¿Cómo sé si mi problema se puede resolver con impresión 3D?</summary>
+      <div class="faq-answer">Si necesitas una pieza física — funcional, de repuesto, un prototipo o algo personalizado — probablemente sí. Escríbenos por WhatsApp y te decimos si es viable, sin costo por esa primera revisión.</div>
+    </details>
+    <details>
+      <summary>¿Qué pasa si no sé qué material o especificaciones necesito?</summary>
+      <div class="faq-answer">No necesitas saberlo. Cuéntanos para qué es la pieza y en qué condiciones va a estar — nosotros recomendamos entre PLA, PETG, TPU u otro material según el uso real.</div>
+    </details>
+
+    <p class="faq-group-title">Sobre Neomech</p>
+    <details>
+      <summary>¿Qué tipo de piezas puede hacer Neomech?</summary>
+      <div class="faq-answer">Piezas funcionales e industriales, productos personalizados para marcas, material POP y de marketing, y prototipos para validar productos antes de producir en serie.</div>
+    </details>
+    <details>
+      <summary>¿Qué diferencia a Neomech de una impresión 3D cualquiera?</summary>
+      <div class="faq-answer">La ingeniería aplicada. No solo imprimimos un archivo: analizamos cada necesidad, estructuramos la mejor alternativa técnica y la materializamos con impresión 3D de alta precisión.</div>
+    </details>
+    <details>
+      <summary>¿Trabajan con empresas o solo con personas naturales?</summary>
+      <div class="faq-answer">Ambos. Acompañamos a empresas, pymes, startups, emprendedores y personas con un proyecto puntual — en sectores empresarial, industrial, de emprendimiento y marketing.</div>
+    </details>
+
+    <p class="faq-group-title">Sobre el proceso</p>
+    <details>
+      <summary>¿Necesito tener el diseño 3D (STL/OBJ/STEP) listo?</summary>
+      <div class="faq-answer">No es obligatorio. Si ya lo tienes, agiliza el proceso. Si no cuentas con diseño, lo desarrollamos en CAD desde cero a partir de tu idea.</div>
+    </details>
+    <details>
+      <summary>¿Cómo es el proceso de principio a fin?</summary>
+      <div class="faq-answer">Diseño 3D a medida → cotización personalizada → producción con control de calidad → entrega final (recogida en sede en Medellín o envío a domicilio).</div>
+    </details>
+    <details>
+      <summary>¿Hay un pedido mínimo?</summary>
+      <div class="faq-answer">No. Hacemos desde una sola pieza hasta lotes de producción en series cortas, sin necesidad de moldes.</div>
+    </details>
+    <details>
+      <summary>¿Hay un límite de tamaño para la pieza?</summary>
+      <div class="faq-answer">Depende del equipo y del proyecto. Para piezas grandes, las dividimos en secciones y las ensamblamos. Cuéntanos las dimensiones que necesitas y te confirmamos si es posible.</div>
+    </details>
+    <details>
+      <summary>¿Qué acabados ofrecen?</summary>
+      <div class="faq-answer">Desde el acabado de impresión estándar hasta lijado, pintura y detalles personalizados, según lo que necesite tu proyecto.</div>
+    </details>
+
+    <p class="faq-group-title">Sobre tiempos, envíos y pago</p>
+    <details>
+      <summary>¿Cuánto se demora un proyecto?</summary>
+      <div class="faq-answer">Depende de la complejidad y la cola de producción activa. Te damos un tiempo estimado apenas revisamos tu caso.</div>
+    </details>
+    <details>
+      <summary>¿Hacen envíos fuera de Medellín?</summary>
+      <div class="faq-answer">Sí, hacemos envíos a nivel nacional. En Medellín y alrededores además ofrecemos recogida directa en el taller.</div>
+    </details>
+    <details>
+      <summary>¿Cuánto cuesta? ¿Qué es el fee de diseño?</summary>
+      <div class="faq-answer">El precio depende de dimensiones, material, cantidad, nivel de detalle y tiempo de entrega. Cuando el proyecto requiere diseño o ingeniería, cobramos un fee de diseño separado de la producción, porque ese trabajo tiene valor propio.</div>
+    </details>
+    <details>
+      <summary>¿Qué formas de pago aceptan?</summary>
+      <div class="faq-answer">Te confirmamos las opciones disponibles al momento de la propuesta, según el alcance de tu proyecto.</div>
+    </details>
+    <details>
+      <summary>¿Qué pasa si la pieza no queda como esperaba?</summary>
+      <div class="faq-answer">Validamos contigo el diseño y el prototipo antes de pasar a producción en firme, para evitar sorpresas en la entrega final.</div>
+    </details>
+
+    <p class="faq-group-title">Cómo empezar</p>
+    <details>
+      <summary>¿Cuál es el primer paso?</summary>
+      <div class="faq-answer">Escríbenos por WhatsApp contándonos tu proyecto, o completa el mini brief si prefieres hacerlo con calma. En menos de 24 horas te respondemos con dudas o directamente con una propuesta.</div>
+    </details>
+  </div>
+</section>
+
+<!-- ============ CTA FINAL: WHATSAPP ============ -->
+<section class="final-cta">
+  <div class="container">
+    <span class="eyebrow">Último paso</span>
+    <h2>Hablemos de tu proyecto</h2>
+    <p>La forma más rápida de arrancar es escribiéndonos directo. Cuéntanos qué necesitas y en menos de 24 horas te respondemos con dudas o con una propuesta.</p>
+    <div class="whatsapp-highlight">
+      <a href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20contarles%20sobre%20un%20proyecto" target="_blank" class="btn btn-whatsapp" style="width:100%;justify-content:center;">💬 Escríbenos por WhatsApp</a>
+      <p style="font-size:13px;color:var(--muted);margin-top:14px;">300 845 5611 · 311 367 2929</p>
+    </div>
+
+    <div class="brief-alt" id="minibrief">
+      <span class="eyebrow">¿Prefieres contarlo por escrito?</span>
+      <h2 style="font-size:24px;">Completa el mini brief</h2>
+      <p style="margin-bottom:0;">Con esto nos ahorramos ir y venir por WhatsApp y podemos darte una respuesta más rápida. No necesitas usar términos técnicos.</p>
+      <div class="brief-frame-wrap">
+        <!-- Reemplaza este bloque por un <iframe src="TU-LINK-DE-GOOGLE-FORM-EMBED" width="100%" height="900" frameborder="0"></iframe> -->
+        <div class="brief-frame-placeholder">
+          📋 Aquí se incrusta el mini brief (Google Form)<br>
+          <small>Reemplaza este bloque por el &lt;iframe&gt; de inserción del formulario</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    <div class="logo">NEO<span style="color:var(--accent-light);">MECH</span> 3D</div>
+    <p>Diseño, ingeniería y fabricación digital.</p>
+    <div class="contact-row">
+      <span>📞 300 845 5611 · 311 367 2929</span>
+      <span>📷 @neomech3d</span>
+      <span>✉️ Neomech3d@gmail.com</span>
+      <span>📍 Medellín, Colombia</span>
+    </div>
+    <p style="margin-top:10px;">© 2026 Neomech 3D — Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<a class="whatsapp-float" href="https://wa.me/573008455611?text=Hola%20Neomech%2C%20quiero%20contarles%20sobre%20un%20proyecto" target="_blank" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32"><path d="M16 3C9 3 3.3 8.7 3.3 15.7c0 2.5.7 4.9 2 7L3 29l6.5-2.2c2 1.1 4.2 1.7 6.5 1.7 7 0 12.7-5.7 12.7-12.7C28.7 8.7 23 3 16 3zm0 23.1c-2 0-4-.5-5.7-1.6l-.4-.2-3.9 1.3 1.3-3.8-.3-.4a10.4 10.4 0 0 1-1.6-5.6C5.4 9.8 10.1 5.1 16 5.1S26.6 9.8 26.6 15.7 21.9 26.1 16 26.1zm5.8-7.6c-.3-.2-1.9-.9-2.1-1s-.5-.2-.7.2-.8 1-1 1.2-.4.2-.7.1a8.6 8.6 0 0 1-2.5-1.6 9.6 9.6 0 0 1-1.7-2.2c-.2-.3 0-.5.1-.6l.4-.5.3-.4a.6.6 0 0 0 0-.5c-.1-.2-.7-1.7-1-2.3s-.5-.5-.7-.5h-.6a1.2 1.2 0 0 0-.8.4 3.6 3.6 0 0 0-1.1 2.7 6.3 6.3 0 0 0 1.3 3.3 14.4 14.4 0 0 0 5.5 4.9c.8.3 1.4.5 1.9.7a4.5 4.5 0 0 0 2.1.1 3.5 3.5 0 0 0 2.3-1.6 2.8 2.8 0 0 0 .2-1.6c-.1-.1-.3-.2-.6-.4z"/></svg>
+</a>
+
+<script>
+  // Fondo generativo del hero (grid animado) — primera impresión al entrar
+  (function(){
+    const canvas = document.getElementById('gridCanvas');
+    const bg = document.querySelector('.hero-grid-bg');
+    if(!canvas || !bg) return;
+    const ROWS = 14, COLS = 30, SPACING = 4, OPACITY_MIN = 0.04, OPACITY_MAX = 0.5, DURATION = 5;
+    canvas.style.gridTemplateColumns = `repeat(${COLS}, 1fr)`;
+    canvas.style.gridTemplateRows = `repeat(${ROWS}, 1fr)`;
+    canvas.style.gap = `${SPACING}px`;
+    const centerRow = Math.floor(ROWS/2), centerCol = Math.floor(COLS/2);
+    const frag = document.createDocumentFragment();
+    for(let i=0;i<ROWS*COLS;i++){
+      const r = Math.floor(i/COLS), c = i % COLS;
+      const cell = document.createElement('div');
+      cell.className = 'grid-cell';
+      const dr = Math.abs(r-centerRow), dc = Math.abs(c-centerCol);
+      const delay = Math.sqrt(dr*dr+dc*dc) * 0.16;
+      cell.style.setProperty('--opacity-min', OPACITY_MIN);
+      cell.style.setProperty('--opacity-max', OPACITY_MAX);
+      cell.style.animationDuration = DURATION + 's';
+      cell.style.animationDelay = delay.toFixed(3) + 's';
+      frag.appendChild(cell);
+    }
+    canvas.appendChild(frag);
+    const hero = document.querySelector('.hero');
+    hero.addEventListener('mousemove', (e) => {
+      const rect = hero.getBoundingClientRect();
+      bg.style.setProperty('--mouse-x', `${e.clientX - rect.left}px`);
+      bg.style.setProperty('--mouse-y', `${e.clientY - rect.top}px`);
+    });
+  })();
+
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards = document.querySelectorAll('.gallery-card');
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const filter = btn.dataset.filter;
+      cards.forEach(card => {
+        card.style.display = (filter === 'all' || card.dataset.category === filter) ? '' : 'none';
+      });
+    });
+  });
+</script>
+
+</body>
+</html>
