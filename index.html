@@ -706,18 +706,30 @@
       const celular = phoneInput.value.trim();
       if(!nombre || !celular) return;
 
-      // Guarda el lead en el ERP en segundo plano — no bloquea el paso a
-      // WhatsApp, y queda registrado aunque el usuario no llegue a escribir
-      // el mensaje. El ERP valida, guarda en Supabase y envía la notificación
-      // por correo; si esta llamada falla, no impide continuar a WhatsApp.
+      const mensaje = encodeURIComponent(`Hola Neomech, soy ${nombre}, quiero contarles sobre un proyecto`);
+      const abrirWhatsApp = () => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank', 'noopener,noreferrer');
+
+      // Guarda el lead en el ERP y SOLO DESPUÉS abre WhatsApp. Es a propósito:
+      // si se abre WhatsApp antes de que termine la petición, el navegador
+      // manda la pestaña actual a segundo plano y corta la llamada a medias
+      // (se ve el preflight OPTIONS pero nunca llega el POST real). Se limita
+      // la espera a 4s con AbortController para no dejar a la persona esperando
+      // si el ERP está caído o lento; si falla o se agota el tiempo, igual
+      // continúa a WhatsApp — solo no queda registrado ese lead puntual.
+      const control = new AbortController();
+      const limite = setTimeout(() => control.abort(), 4000);
       fetch(LEAD_API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nombre, celular }),
-      }).catch(() => {});
+        signal: control.signal,
+      })
+        .catch(() => {})
+        .finally(() => {
+          clearTimeout(limite);
+          abrirWhatsApp();
+        });
 
-      const mensaje = encodeURIComponent(`Hola Neomech, soy ${nombre}, quiero contarles sobre un proyecto`);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank', 'noopener,noreferrer');
       closeModal();
       form.reset();
     });
