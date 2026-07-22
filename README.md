@@ -71,7 +71,6 @@ Si prefieres no usar la terminal: en GitHub, entra al repo vacío → "uploading
 Busca "TODO" dentro de `index.html`:
 
 - **Fee de diseño** (sección "Cómo se cotiza tu proyecto"): definir el monto o rango real antes de publicar.
-- **Mini brief**: el bloque `brief-frame-placeholder` debe reemplazarse por el `<iframe>` de inserción de tu Google Form real.
 - **og:url / canonical**: agregar la URL final una vez el dominio esté conectado en Railway.
 
 ## Historial de cambios
@@ -82,6 +81,7 @@ Busca "TODO" dentro de `index.html`:
 4. Alineado con Railway: se reemplazan `_headers`/`vercel.json` (Netlify/Vercel) por un `Caddyfile` — el mecanismo real que usa Railway para servir sitios estáticos y fijar cabeceras de seguridad.
 5. Imágenes embebidas como `data:` URI directamente en `index.html`, para que dejen de depender de que la carpeta `assets/` se suba/despliegue correctamente por separado.
 6. Sección "Marcas con las que hemos trabajado": los logos reales (extraídos del portafolio en PDF) reemplazan las etiquetas de texto. Se renderizan de forma dinámica desde un arreglo `brandLogos` en JS (mismo patrón del componente `LogoCloud` que compartiste), en una cinta con scroll infinito que se pausa al pasar el mouse.
+7. Mini brief embebido: el placeholder se reemplazó por el `<iframe>` real del Google Form. El CSP ya traía permiso para `docs.google.com`, así que no hizo falta tocar nada de seguridad.
 
 ### Nota sobre un logo sin nombre
 
