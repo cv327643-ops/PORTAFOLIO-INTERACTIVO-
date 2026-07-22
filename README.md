@@ -86,6 +86,7 @@ Busca "TODO" dentro de `index.html`:
 8. Un solo botón de WhatsApp en toda la página: el botón flotante de la esquina inferior derecha. Se quitaron todos los demás (header, hero, mid-CTAs, banda de CTA, CTA final) — esas secciones ahora apuntan al botón flotante o al mini brief con texto, sin un botón propio.
 9. El botón flotante ahora abre un formulario emergente (nombre + celular) antes de ir a WhatsApp, para que el lead quede registrado aunque la persona no llegue a escribir el mensaje. Falta conectar el Google Form real donde se guardan esos datos (ver sección "Pendiente" más abajo).
 10. Logo real (ícono de engranaje + wordmark "NEOMECH 3D") en vez del logo de solo texto, en el header, el footer, y como pantalla de bienvenida a pantalla completa que es lo primero que se ve al entrar — se desvanece sola después de un segundo.
+11. Corrección: se reemplaza la aproximación del logo (hecha con CSS/SVG) por la imagen real del logo, embebida tal cual sin ningún cambio, en las mismas 3 ubicaciones (header, footer, splash). Se limpia el CSS que ya no se usa.
 
 ### Nota sobre un logo sin nombre
 
