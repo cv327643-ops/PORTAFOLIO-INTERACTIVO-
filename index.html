@@ -701,23 +701,17 @@
     });
 
     function guardarLeadEnErp(nombre, celular) {
-      const payload = JSON.stringify({ nombre, celular });
-      // sendBeacon está hecho justo para esto: enviar datos en segundo plano
-      // con la garantía de que el navegador los entrega aunque la página
-      // pase a segundo plano o se esté por descargar (a diferencia de un
-      // fetch normal, que puede quedar a medias si la pestaña pierde foco
-      // justo después, como pasa al abrir la ventana de WhatsApp).
-      if (navigator.sendBeacon) {
-        const blob = new Blob([payload], { type: 'application/json' });
-        navigator.sendBeacon(LEAD_API_URL, blob);
-      } else {
-        fetch(LEAD_API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload,
-          keepalive: true,
-        }).catch(() => {});
-      }
+      // fetch con keepalive:true está hecho para esto: el navegador
+      // garantiza que la petición se complete aunque la pestaña pierda
+      // foco o navegue justo después (como pasa al abrir WhatsApp), igual
+      // que sendBeacon — pero pasando por el mismo camino de red normal
+      // de fetch (probado y funcionando), en vez del de sendBeacon.
+      fetch(LEAD_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, celular }),
+        keepalive: true,
+      }).catch(() => {});
     }
 
     form.addEventListener('submit', function(e){
