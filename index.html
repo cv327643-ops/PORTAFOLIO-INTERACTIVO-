@@ -666,11 +666,7 @@
   // dentro de Google Forms: el enlace resultante trae los entry.XXXXXXX de cada
   // pregunta, y la action_url es la misma URL pero terminada en /formResponse
   // en vez de /viewform.
-  const LEAD_CAPTURE = {
-    formActionUrl: '', // ej: https://docs.google.com/forms/d/e/FORM_ID/formResponse
-    nameEntry: '',     // ej: entry.123456789
-    phoneEntry: '',    // ej: entry.987654321
-  };
+  const LEAD_API_URL = 'https://neomech-erp-production.up.railway.app/api/public/lead-landing';
   const WHATSAPP_NUMBER = '573008455611';
 
   (function setupLeadModal(){
@@ -710,14 +706,15 @@
       const celular = phoneInput.value.trim();
       if(!nombre || !celular) return;
 
-      // Guarda el lead en segundo plano — no bloquea el paso a WhatsApp,
-      // y queda registrado aunque el usuario no llegue a escribir el mensaje.
-      if(LEAD_CAPTURE.formActionUrl && LEAD_CAPTURE.nameEntry && LEAD_CAPTURE.phoneEntry){
-        const data = new FormData();
-        data.append(LEAD_CAPTURE.nameEntry, nombre);
-        data.append(LEAD_CAPTURE.phoneEntry, celular);
-        fetch(LEAD_CAPTURE.formActionUrl, { method: 'POST', mode: 'no-cors', body: data }).catch(() => {});
-      }
+      // Guarda el lead en el ERP en segundo plano — no bloquea el paso a
+      // WhatsApp, y queda registrado aunque el usuario no llegue a escribir
+      // el mensaje. El ERP valida, guarda en Supabase y envía la notificación
+      // por correo; si esta llamada falla, no impide continuar a WhatsApp.
+      fetch(LEAD_API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nombre, celular }),
+      }).catch(() => {});
 
       const mensaje = encodeURIComponent(`Hola Neomech, soy ${nombre}, quiero contarles sobre un proyecto`);
       window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank', 'noopener,noreferrer');
