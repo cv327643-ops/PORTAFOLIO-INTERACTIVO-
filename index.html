@@ -700,36 +700,36 @@
       if(e.key === 'Escape' && !overlay.hidden) closeModal();
     });
 
+    function guardarLeadEnErp(nombre, celular) {
+      const payload = JSON.stringify({ nombre, celular });
+      // sendBeacon está hecho justo para esto: enviar datos en segundo plano
+      // con la garantía de que el navegador los entrega aunque la página
+      // pase a segundo plano o se esté por descargar (a diferencia de un
+      // fetch normal, que puede quedar a medias si la pestaña pierde foco
+      // justo después, como pasa al abrir la ventana de WhatsApp).
+      if (navigator.sendBeacon) {
+        const blob = new Blob([payload], { type: 'application/json' });
+        navigator.sendBeacon(LEAD_API_URL, blob);
+      } else {
+        fetch(LEAD_API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: payload,
+          keepalive: true,
+        }).catch(() => {});
+      }
+    }
+
     form.addEventListener('submit', function(e){
       e.preventDefault();
       const nombre = nameInput.value.trim();
       const celular = phoneInput.value.trim();
       if(!nombre || !celular) return;
 
+      guardarLeadEnErp(nombre, celular);
+
       const mensaje = encodeURIComponent(`Hola Neomech, soy ${nombre}, quiero contarles sobre un proyecto`);
-      const abrirWhatsApp = () => window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank', 'noopener,noreferrer');
-
-      // Guarda el lead en el ERP y SOLO DESPUÉS abre WhatsApp. Es a propósito:
-      // si se abre WhatsApp antes de que termine la petición, el navegador
-      // manda la pestaña actual a segundo plano y corta la llamada a medias
-      // (se ve el preflight OPTIONS pero nunca llega el POST real). Se limita
-      // la espera a 4s con AbortController para no dejar a la persona esperando
-      // si el ERP está caído o lento; si falla o se agota el tiempo, igual
-      // continúa a WhatsApp — solo no queda registrado ese lead puntual.
-      const control = new AbortController();
-      const limite = setTimeout(() => control.abort(), 4000);
-      fetch(LEAD_API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre, celular }),
-        signal: control.signal,
-      })
-        .catch(() => {})
-        .finally(() => {
-          clearTimeout(limite);
-          abrirWhatsApp();
-        });
-
+      window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${mensaje}`, '_blank', 'noopener,noreferrer');
       closeModal();
       form.reset();
     });
