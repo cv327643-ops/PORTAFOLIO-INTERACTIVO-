@@ -72,6 +72,7 @@ Busca "TODO" dentro de `index.html`:
 
 - **Fee de diseño** (sección "Cómo se cotiza tu proyecto"): definir el monto o rango real antes de publicar.
 - **og:url / canonical**: agregar la URL final una vez el dominio esté conectado en Railway.
+- **Captura de leads por WhatsApp**: crea un Google Form pequeño y aparte (2 preguntas: Nombre y Celular). Dentro de Google Forms, contesta el formulario una vez y usa "Obtener enlace prellenado" — el enlace resultante trae los `entry.XXXXXXX` de cada pregunta. Con esos 2 valores, más la URL del formulario cambiando `/viewform` por `/formResponse`, completa el objeto `LEAD_CAPTURE` al inicio del `<script>` en `index.html`. Mientras esto quede vacío, el botón de WhatsApp funciona igual (abre WhatsApp con el nombre de la persona), pero el registro del lead en segundo plano no se guarda en ningún lado.
 
 ## Historial de cambios
 
@@ -82,6 +83,9 @@ Busca "TODO" dentro de `index.html`:
 5. Imágenes embebidas como `data:` URI directamente en `index.html`, para que dejen de depender de que la carpeta `assets/` se suba/despliegue correctamente por separado.
 6. Sección "Marcas con las que hemos trabajado": los logos reales (extraídos del portafolio en PDF) reemplazan las etiquetas de texto. Se renderizan de forma dinámica desde un arreglo `brandLogos` en JS (mismo patrón del componente `LogoCloud` que compartiste), en una cinta con scroll infinito que se pausa al pasar el mouse.
 7. Mini brief embebido: el placeholder se reemplazó por el `<iframe>` real del Google Form. El CSP ya traía permiso para `docs.google.com`, así que no hizo falta tocar nada de seguridad.
+8. Un solo botón de WhatsApp en toda la página: el botón flotante de la esquina inferior derecha. Se quitaron todos los demás (header, hero, mid-CTAs, banda de CTA, CTA final) — esas secciones ahora apuntan al botón flotante o al mini brief con texto, sin un botón propio.
+9. El botón flotante ahora abre un formulario emergente (nombre + celular) antes de ir a WhatsApp, para que el lead quede registrado aunque la persona no llegue a escribir el mensaje. Falta conectar el Google Form real donde se guardan esos datos (ver sección "Pendiente" más abajo).
+10. Logo real (ícono de engranaje + wordmark "NEOMECH 3D") en vez del logo de solo texto, en el header, el footer, y como pantalla de bienvenida a pantalla completa que es lo primero que se ve al entrar — se desvanece sola después de un segundo.
 
 ### Nota sobre un logo sin nombre
 
