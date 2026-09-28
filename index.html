@@ -292,6 +292,42 @@
   .cc-wa:hover{border-color:var(--whatsapp);box-shadow:0 16px 40px rgba(0,0,0,.45),0 0 30px rgba(37,211,102,.35);}
   @media(max-width:900px){.contact-hub{grid-template-columns:repeat(2,1fr);}}
   @media(max-width:600px){.contact-hub{grid-template-columns:1fr;margin-bottom:54px;}.contact-card{padding:16px 18px;}.cc-ico{flex-basis:48px;height:48px;}.cc-text b{font-size:17px;}}
+
+  .quote{position:relative;overflow:hidden;background:radial-gradient(ellipse at 20% 0%,rgba(26,168,204,.10),transparent 55%),var(--bg);}
+  .quote .container{position:relative;}
+  .quote .section-head h2{font-size:38px;line-height:1.15;}
+  .quote .section-head h2 em{font-style:normal;background:linear-gradient(90deg,var(--accent),var(--accent-light));-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .quote .section-head p{max-width:640px;}
+  .qt-grid{display:grid;grid-template-columns:1fr 1.05fr;gap:28px;align-items:stretch;}
+  .qt-left{display:flex;flex-direction:column;}
+  .qt-title{font-size:15px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent-light);margin-bottom:16px;}
+  .qt-factors{display:grid;gap:12px;flex:1;grid-auto-rows:1fr;}
+  .qt-factor{display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:14px;border:1px solid var(--line);background:var(--panel2);transition:border-color .2s ease,transform .2s ease;}
+  .qt-factor:hover{border-color:var(--accent);transform:translateX(4px);}
+  .qt-fico{flex:0 0 44px;height:44px;border-radius:12px;display:grid;place-items:center;color:var(--accent-light);background:linear-gradient(135deg,rgba(26,168,204,.28),rgba(111,227,245,.06));border:1px solid rgba(26,168,204,.45);}
+  .qt-factor b{display:block;font-size:15.5px;color:var(--text);}
+  .qt-factor span{font-size:14px;color:var(--muted);}
+  .qt-design{border:1px solid rgba(26,168,204,.6);border-radius:18px;padding:28px 28px 26px;background:linear-gradient(160deg,rgba(26,168,204,.16),rgba(26,168,204,.03));box-shadow:0 20px 50px rgba(0,0,0,.35);}
+  .qt-design .qt-title{margin-bottom:14px;}
+  .qt-design > p{font-size:15px;color:var(--muted);margin-bottom:12px;line-height:1.6;}
+  .qt-scale{list-style:none;margin:18px 0;padding:0;display:grid;gap:12px;}
+  .qt-scale li{display:flex;align-items:center;gap:14px;padding:13px 14px;border-radius:12px;background:rgba(7,9,10,.45);border:1px solid rgba(255,255,255,.06);}
+  .qt-dot{flex:0 0 40px;display:flex;align-items:flex-end;justify-content:center;gap:3px;height:26px;}
+  .qt-dot i{display:block;width:7px;border-radius:2px;background:linear-gradient(to top,var(--accent),var(--accent-light));}
+  .qt-dot i:nth-child(1){height:10px;}.qt-dot i:nth-child(2){height:18px;}.qt-dot i:nth-child(3){height:26px;}
+  .qt-scale b{display:block;font-size:15px;color:var(--text);}
+  .qt-scale span{font-size:13.5px;color:var(--muted);line-height:1.5;}
+  .qt-note{font-size:14px;color:var(--muted);padding:12px 14px;border-left:3px solid var(--accent);background:rgba(26,168,204,.08);border-radius:0 10px 10px 0;margin-bottom:10px;}
+  .qt-note b{color:var(--text);}
+  .qt-soft{border-left-color:rgba(111,227,245,.5);}
+  .design-empathy,.qt-empathy{font-size:14px;color:var(--accent-light);font-style:italic;margin:16px 0 18px;line-height:1.6;}
+  .qt-cta{display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+  .qt-cta a{color:var(--muted);font-size:14px;font-weight:700;border-bottom:1px solid var(--line);}
+  .qt-cta a:hover{color:var(--accent-light);border-color:var(--accent-light);}
+  .qt-promises{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px;}
+  .qt-promises div{display:flex;align-items:center;justify-content:center;gap:10px;padding:14px 16px;border-radius:12px;border:1px dashed rgba(111,227,245,.3);color:var(--text);font-size:14.5px;font-weight:600;}
+  .qt-promises svg{color:var(--accent-light);flex:0 0 auto;}
+  @media(max-width:900px){.qt-grid{grid-template-columns:1fr;}.qt-promises{grid-template-columns:1fr;}.quote .section-head h2{font-size:30px;}.qt-design{padding:22px 20px;}}
   .section{padding:84px 0;}
   .section-alt{background:var(--panel);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
   .section-head{max-width:660px;margin:0 auto 48px;text-align:center;}
@@ -723,7 +759,7 @@
 </section>
 
 <!-- ============ POR QUÉ NEOMECH ============ -->
-<section class="section section-alt" id="precios">
+<section class="section section-alt">
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Por qué Neomech</span>
@@ -738,35 +774,44 @@
   </div>
 </section>
 
-<!-- ============ COTIZACIÓN Y FEE DE DISEÑO ============ -->
-<section class="section">
+<!-- ============ COTIZACIÓN Y DISEÑO ============ -->
+<section class="section quote" id="precios">
   <div class="container">
     <div class="section-head">
       <span class="eyebrow">Cómo se cotiza tu proyecto</span>
-      <h2>Transparencia desde el primer contacto</h2>
+      <h2>Cada proyecto es <em>único</em>, y su cotización también</h2>
+      <p>No trabajamos con precios de catálogo. Miramos tu idea con calma, te explicamos cómo se arma el valor y te enviamos la propuesta antes de empezar.</p>
     </div>
-    <div class="pricing-grid">
-      <div>
-        <div class="pricing-factors">
-          <div class="factor"><b>Dimensiones</b>Tamaño y complejidad de la pieza.</div>
-          <div class="factor"><b>Material</b>PLA, PETG, TPU u otro según el uso.</div>
-          <div class="factor"><b>Cantidad</b>Unidad, lote corto o producción.</div>
-          <div class="factor"><b>Nivel de detalle</b>Acabado, tolerancias, ajuste.</div>
-          <div class="factor" style="grid-column:span 2;"><b>Tiempo de entrega</b>Según la complejidad y la cola de producción activa.</div>
+    <div class="qt-grid">
+      <div class="qt-left">
+        <h3 class="qt-title">Lo que tenemos en cuenta</h3>
+        <div class="qt-factors">
+          <div class="qt-factor"><span class="qt-fico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17L17 3l4 4L7 21l-4-4z"/><path d="M7 13l2 2M10 10l2 2M13 7l2 2"/></svg></span><div><b>Dimensiones</b><span>Tamaño y complejidad de la pieza.</span></div></div>
+          <div class="qt-factor"><span class="qt-fico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></span><div><b>Material</b><span>PLA, PETG, TPU u otro según el uso.</span></div></div>
+          <div class="qt-factor"><span class="qt-fico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg></span><div><b>Cantidad</b><span>Unidad, lote corto o producción.</span></div></div>
+          <div class="qt-factor"><span class="qt-fico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 12s3.6-6.5 10-6.5S22 12 22 12s-3.6 6.5-10 6.5S2 12 2 12z"/><circle cx="12" cy="12" r="2.8"/></svg></span><div><b>Nivel de detalle</b><span>Acabado, tolerancias, ajuste.</span></div></div>
+          <div class="qt-factor"><span class="qt-fico"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></span><div><b>Tiempo de entrega</b><span>Según la complejidad y la agenda de producción.</span></div></div>
         </div>
       </div>
-      <div class="fee-box">
-        <h3>Fee de diseño</h3>
-        <p>Cuando el proyecto requiere diseño o ingeniería (no solo imprimir un archivo ya listo), cobramos un fee de diseño separado del costo de producción.</p>
-        <p>Cubre el cálculo, el modelado y la validación técnica de la pieza — con o sin producción final.</p>
-        <ul class="fee-tiers">
-          <li><span>Tiempo estándar (4 semanas)</span><strong>$300.000 COP</strong></li>
-          <li><span>Entrega en 3 semanas</span><strong>$400.000 COP</strong></li>
-          <li><span>Entrega en 2 semanas</span><strong>$500.000 COP</strong></li>
-          <li><span>Entrega en 1 semana</span><strong>$650.000 COP</strong></li>
-        </ul>
-        <p class="fee-note">El valor varía según el tiempo de entrega que necesites — a menor plazo, mayor prioridad en la cola de producción.</p>
+      <div class="qt-design">
+        <h3 class="qt-title">Sobre el diseño de tu pieza</h3>
+        <p>Si tu proyecto necesita diseño o ingeniería —no solo imprimir un archivo que ya tienes listo— incluimos un valor de diseño, aparte del de producción, para que veas con claridad en qué se va cada peso.</p>
+        <p>Cubre el cálculo, el modelado y la validación técnica de la pieza, con o sin producción final. Y depende de qué tan compleja sea de diseñar:</p>
+        <ol class="qt-scale">
+          <li><span class="qt-dot"><i></i></span><div><b>Sencillo</b><span>Piezas simples o ajustes sobre algo que ya existe.</span></div></li>
+          <li><span class="qt-dot"><i></i><i></i></span><div><b>Intermedio</b><span>Piezas a medida que deben encajar o funcionar con otras.</span></div></li>
+          <li><span class="qt-dot"><i></i><i></i><i></i></span><div><b>Avanzado</b><span>Mecanismos, varias piezas trabajando juntas o ingeniería inversa de algo que ya no se consigue.</span></div></li>
+        </ol>
+        <div class="qt-note"><b>¿Ya tienes tu diseño (STL, OBJ o STEP)?</b> En ese caso cotizamos solo la producción.</div>
+        <div class="qt-note qt-soft">¿Tienes afán? Cuéntanos tu fecha: podemos priorizar tu proyecto y te decimos cómo cambia el valor.</div>
+        <p class="qt-empathy">Sabemos que un mismo valor se siente distinto para cada persona. Por eso preferimos explicarte bien cómo se arma, antes de hablar de cifras.</p>
+        <div class="qt-cta"><button type="button" class="btn btn-primary" data-open-wa>Quiero mi cotización →</button><a href="#minibrief">Prefiero escribirlo</a></div>
       </div>
+    </div>
+    <div class="qt-promises">
+      <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg><span>Propuesta clara antes de empezar</span></div>
+      <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg><span>Diseño y producción, por separado</span></div>
+      <div><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></svg><span>Te respondemos en menos de 24 horas</span></div>
     </div>
   </div>
 </section>
@@ -1146,6 +1191,14 @@
         });
       }
       track.appendChild(frag);
+    });
+  })();
+
+  // Cualquier botón con data-open-wa abre el formulario de WhatsApp (el mismo del botón flotante)
+  (function openWaButtons(){
+    const floatBtn = document.getElementById('whatsappFloatBtn');
+    document.querySelectorAll('[data-open-wa]').forEach(b => {
+      if(floatBtn) b.addEventListener('click', () => floatBtn.click());
     });
   })();
 
