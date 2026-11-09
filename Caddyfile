@@ -31,6 +31,10 @@
 		hide README.md
 	}
 
+	# El QR/NFC de la feria apunta a /feria -> sirve el landing con la ruleta activada
+	@feria path /feria /feria/
+	rewrite @feria /index.html?feria=1
+
 	encode {
 		gzip
 		zstd
