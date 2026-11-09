@@ -1,0 +1,358 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Ruleta Neomech 3D</title>
+<meta name="robots" content="noindex, nofollow">
+<style>
+  :root{
+    --bg:#07090A;
+    --panel:#0F1416;
+    --panel2:#12191C;
+    --line:#1E2A2E;
+    --accent:#1AA8CC;
+    --accent-light:#6FE3F5;
+    --text:#F2F6F7;
+    --muted:#9FB0B5;
+    --whatsapp:#25D366;
+    --gold:#F5C542;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Segoe UI',Arial,sans-serif;
+    background:radial-gradient(circle at 50% -10%, #122226 0%, var(--bg) 55%);
+    color:var(--text);
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    line-height:1.5;
+  }
+  .card{
+    width:100%;
+    max-width:440px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:20px;
+    padding:28px 24px 32px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+  }
+  .logo{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    margin-bottom:18px;
+  }
+  .logo svg{width:26px;height:26px;stroke:var(--accent-light);}
+  .logo span{font-weight:800;letter-spacing:.5px;font-size:18px;}
+  .logo b{color:var(--accent-light);}
+  h1{font-size:21px;font-weight:800;text-align:center;margin-bottom:6px;}
+  p.sub{color:var(--muted);text-align:center;font-size:14px;margin-bottom:22px;}
+  label{display:block;font-size:13px;color:var(--muted);margin:14px 0 6px;}
+  input{
+    width:100%;
+    background:var(--panel2);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:13px 14px;
+    color:var(--text);
+    font-size:15px;
+    outline:none;
+    transition:border-color .2s;
+  }
+  input:focus{border-color:var(--accent);}
+  .btn{
+    width:100%;
+    margin-top:22px;
+    padding:15px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(135deg, var(--accent), var(--accent-light));
+    color:#06151A;
+    font-weight:800;
+    font-size:16px;
+    cursor:pointer;
+    transition:transform .15s;
+  }
+  .btn:active{transform:scale(.98);}
+  .btn:disabled{opacity:.55;cursor:not-allowed;}
+  .error{color:#FF8A8A;font-size:13px;margin-top:10px;text-align:center;min-height:16px;}
+
+  /* ---- Ruleta ---- */
+  .wheel-wrap{display:none;flex-direction:column;align-items:center;}
+  .wheel-wrap.active{display:flex;}
+  #regStep.hidden, #resultStep.hidden{display:none;}
+  .wheel-holder{
+    position:relative;
+    width:280px;
+    height:280px;
+    margin:10px auto 22px;
+  }
+  .pointer{
+    position:absolute;
+    top:-10px;
+    left:50%;
+    transform:translateX(-50%);
+    width:0;height:0;
+    border-left:14px solid transparent;
+    border-right:14px solid transparent;
+    border-top:22px solid var(--gold);
+    z-index:5;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.5));
+  }
+  #wheel{
+    width:280px;
+    height:280px;
+    border-radius:50%;
+    position:relative;
+    border:6px solid var(--panel2);
+    box-shadow:0 0 0 2px var(--line), inset 0 0 30px rgba(0,0,0,.4);
+    transition:transform 4.2s cubic-bezier(.17,.67,.21,1);
+  }
+  .slice-label{
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:120px;
+    height:20px;
+    margin-top:-10px;
+    transform-origin:0% 50%;
+    font-size:9.5px;
+    font-weight:700;
+    text-align:right;
+    padding-right:14px;
+    color:#06151A;
+    line-height:1.15;
+  }
+  .hub{
+    position:absolute;
+    top:50%;left:50%;
+    width:56px;height:56px;
+    margin:-28px 0 0 -28px;
+    background:var(--panel);
+    border:3px solid var(--gold);
+    border-radius:50%;
+    z-index:4;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .hub svg{width:24px;height:24px;stroke:var(--gold);}
+
+  .result-badge{
+    width:100%;
+    background:linear-gradient(135deg, rgba(26,168,204,.15), rgba(111,227,245,.08));
+    border:1px solid var(--accent);
+    border-radius:14px;
+    padding:20px;
+    text-align:center;
+    margin-bottom:16px;
+  }
+  .result-badge .tag{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--accent-light);font-weight:700;margin-bottom:8px;}
+  .result-badge .premio{font-size:19px;font-weight:800;margin-bottom:10px;}
+  .codigo{
+    display:inline-block;
+    font-family:'Courier New',monospace;
+    font-size:24px;
+    font-weight:800;
+    letter-spacing:4px;
+    background:var(--panel2);
+    border:1px dashed var(--accent-light);
+    border-radius:10px;
+    padding:10px 18px;
+    color:var(--gold);
+  }
+  .hint{font-size:13px;color:var(--muted);text-align:center;margin-top:14px;}
+  .wa-btn{
+    display:flex;align-items:center;justify-content:center;gap:8px;
+    width:100%;margin-top:18px;padding:14px;border-radius:12px;
+    background:var(--whatsapp);color:#fff;font-weight:700;border:none;cursor:pointer;font-size:15px;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor"/></svg>
+      <span>NEO<b>MECH</b> 3D</span>
+    </div>
+
+    <!-- PASO 1: REGISTRO -->
+    <div id="regStep">
+      <h1>¡Gira y gana!</h1>
+      <p class="sub">Regístrate y participa por un beneficio exclusivo de Neomech 3D.</p>
+      <form id="regForm" autocomplete="off">
+        <label for="nombre">Nombre completo</label>
+        <input id="nombre" type="text" placeholder="Tu nombre" required>
+        <label for="telefono">Número de teléfono</label>
+        <input id="telefono" type="tel" placeholder="300 000 0000" required inputmode="tel">
+        <label for="correo">Correo electrónico</label>
+        <input id="correo" type="email" placeholder="tucorreo@ejemplo.com" required>
+        <button type="submit" class="btn" id="btnRegistrar">Girar la ruleta</button>
+        <div class="error" id="regError"></div>
+      </form>
+    </div>
+
+    <!-- PASO 2: RULETA -->
+    <div id="wheelStep" class="wheel-wrap">
+      <p class="sub" id="wheelHint">Toca el botón para girar</p>
+      <div class="wheel-holder">
+        <div class="pointer"></div>
+        <div id="wheel"></div>
+        <div class="hub"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z" fill="currentColor"/></svg></div>
+      </div>
+      <button class="btn" id="btnGirar">Girar</button>
+    </div>
+
+    <!-- PASO 3: RESULTADO -->
+    <div id="resultStep" class="hidden">
+      <div class="result-badge">
+        <div class="tag" id="resultTag">¡Ganaste!</div>
+        <div class="premio" id="resultPremio"></div>
+        <div class="codigo" id="resultCodigo"></div>
+      </div>
+      <p class="hint">Muéstrale este código a nuestro equipo en el stand para hacerlo válido.</p>
+      <button class="wa-btn" id="btnWa">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="#fff"><path d="M17.5 14.4c-.3-.1-1.7-.8-1.9-.9-.3-.1-.4-.1-.6.1-.2.3-.7.9-.8 1-.2.2-.3.2-.5.1-.3-.1-1.1-.4-2.1-1.3-.8-.7-1.3-1.6-1.4-1.9-.2-.3 0-.4.1-.6.1-.1.3-.3.4-.5.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5C11 9.1 10.5 8 10.3 7.5c-.2-.4-.4-.4-.6-.4h-.5c-.2 0-.5.1-.7.3-.3.3-1 1-1 2.4s1 2.8 1.2 3c.1.2 2 3.1 4.9 4.3.7.3 1.2.5 1.6.6.7.2 1.3.2 1.8.1.5-.1 1.7-.7 1.9-1.3.2-.7.2-1.2.2-1.3-.1-.1-.2-.2-.5-.3z"/><path d="M12 2a10 10 0 00-8.5 15.3L2 22l4.8-1.5A10 10 0 1012 2z" fill="none" stroke="#fff" stroke-width="1.6"/></svg>
+        Hablar por WhatsApp
+      </button>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+  var SUPABASE_URL = "https://hiewaojvwruxtwncatnf.supabase.co";
+  var ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZXdhb2p2d3J1eHR3bmNhdG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDUzMTgsImV4cCI6MjA5MzgyMTMxOH0.1bVINm6dEHVXK8DFRWQj3rgNkgD_r7ObYTCuKB48V3I";
+  var FUNCTION_URL = SUPABASE_URL + "/functions/v1/registrar-ruleta";
+  var WHATSAPP_NUMBER = "573000000000"; // TODO: reemplazar por el numero real de Neomech
+
+  // Mismo orden/colores que el backend (el indice decide donde frena la ruleta)
+  var PREMIOS = [
+    { slug:"desc7",   label:"7% de descuento" },
+    { slug:"desc10",  label:"10% de descuento" },
+    { slug:"llavero", label:"Llavero o charm 3D" },
+    { slug:"envio",   label:"Envío gratis" },
+    { slug:"desc12",  label:"12% de descuento" },
+    { slug:"desc15",  label:"15% de descuento" },
+    { slug:"diseno",  label:"Diseño 3D gratis" },
+    { slug:"grande",  label:"30% en lámparas o pieza gratis" }
+  ];
+  var COLORS = ["#1AA8CC","#12616F","#1AA8CC","#12616F","#1AA8CC","#12616F","#1AA8CC","#F5C542"];
+
+  var regStep = document.getElementById('regStep');
+  var wheelStep = document.getElementById('wheelStep');
+  var resultStep = document.getElementById('resultStep');
+  var wheelEl = document.getElementById('wheel');
+  var regForm = document.getElementById('regForm');
+  var regError = document.getElementById('regError');
+  var btnRegistrar = document.getElementById('btnRegistrar');
+  var btnGirar = document.getElementById('btnGirar');
+  var wheelHint = document.getElementById('wheelHint');
+
+  // Construir la ruleta visual (8 gajos iguales)
+  function buildWheel(){
+    var n = PREMIOS.length;
+    var slice = 360/n;
+    var bg = PREMIOS.map(function(_,i){
+      var from = i*slice, to = (i+1)*slice;
+      return COLORS[i % COLORS.length] + " " + from + "deg " + to + "deg";
+    }).join(", ");
+    wheelEl.style.background = "conic-gradient(" + bg + ")";
+    PREMIOS.forEach(function(p,i){
+      var el = document.createElement('div');
+      el.className = 'slice-label';
+      el.style.transform = 'rotate(' + (i*slice + slice/2) + 'deg)';
+      el.textContent = p.label;
+      wheelEl.appendChild(el);
+    });
+  }
+  buildWheel();
+
+  function setLoading(btn, loading, textoNormal, textoCargando){
+    btn.disabled = loading;
+    btn.textContent = loading ? textoCargando : textoNormal;
+  }
+
+  var pendingResult = null;
+
+  regForm.addEventListener('submit', function(e){
+    e.preventDefault();
+    regError.textContent = '';
+    var nombre = document.getElementById('nombre').value.trim();
+    var telefono = document.getElementById('telefono').value.trim();
+    var correo = document.getElementById('correo').value.trim();
+
+    if(!nombre || !telefono || !correo){
+      regError.textContent = 'Completa los tres campos para continuar.';
+      return;
+    }
+    var correoOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(correo);
+    if(!correoOk){
+      regError.textContent = 'Revisa el correo, no parece válido.';
+      return;
+    }
+
+    setLoading(btnRegistrar, true, 'Girar la ruleta', 'Registrando...');
+
+    fetch(FUNCTION_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': ANON_KEY, 'Authorization': 'Bearer ' + ANON_KEY },
+      body: JSON.stringify({ nombre: nombre, telefono: telefono, correo: correo, origen: 'feria' })
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(data){
+      setLoading(btnRegistrar, false, 'Girar la ruleta', 'Registrando...');
+      if(data.error){
+        regError.textContent = 'Algo falló, intenta de nuevo en un momento.';
+        return;
+      }
+      pendingResult = data;
+      regStep.classList.add('hidden');
+
+      if(data.ya_registrado){
+        // Ya participo antes: mostramos directo su premio, sin animar la ruleta
+        showResult(data, true);
+      } else {
+        wheelStep.classList.add('active');
+      }
+    })
+    .catch(function(){
+      setLoading(btnRegistrar, false, 'Girar la ruleta', 'Registrando...');
+      regError.textContent = 'No pudimos conectar. Revisa tu conexión e intenta otra vez.';
+    });
+  });
+
+  btnGirar.addEventListener('click', function(){
+    if(!pendingResult || pendingResult.ya_registrado) return;
+    btnGirar.disabled = true;
+    wheelHint.textContent = 'Girando...';
+
+    var idx = PREMIOS.findIndex(function(p){ return p.slug === pendingResult.premio_slug; });
+    if(idx < 0) idx = 0;
+    var slice = 360/PREMIOS.length;
+    var targetDeg = 360*6 + (360 - (idx*slice + slice/2));
+    wheelEl.style.transform = 'rotate(' + targetDeg + 'deg)';
+
+    setTimeout(function(){
+      wheelStep.classList.remove('active');
+      showResult(pendingResult, false);
+    }, 4300);
+  });
+
+  function showResult(data, yaRegistrado){
+    document.getElementById('resultTag').textContent = yaRegistrado ? 'Ya habías participado' : '¡Felicidades!';
+    document.getElementById('resultPremio').textContent = data.premio_label;
+    document.getElementById('resultCodigo').textContent = data.codigo;
+    resultStep.classList.remove('hidden');
+
+    var msg = encodeURIComponent('Hola Neomech 3D! Gané en la ruleta de la feria: ' + data.premio_label + ' (código ' + data.codigo + ')');
+    document.getElementById('btnWa').onclick = function(){
+      window.open('https://wa.me/' + WHATSAPP_NUMBER + '?text=' + msg, '_blank');
+    };
+  }
+})();
+</script>
+</body>
+</html>
