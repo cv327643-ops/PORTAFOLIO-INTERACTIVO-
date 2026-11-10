@@ -1633,7 +1633,8 @@
 (function(){
   "use strict";
   var params = new URLSearchParams(window.location.search);
-  if(params.get('feria') !== '1') return;
+  var esFeria = params.get('feria') === '1' || /^\/feria\/?$/.test(window.location.pathname);
+  if(!esFeria) return;
 
   var SUPABASE_URL = "https://hiewaojvwruxtwncatnf.supabase.co";
   var ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhpZXdhb2p2d3J1eHR3bmNhdG5mIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzgyNDUzMTgsImV4cCI6MjA5MzgyMTMxOH0.1bVINm6dEHVXK8DFRWQj3rgNkgD_r7ObYTCuKB48V3I";
@@ -1707,6 +1708,7 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
     var url = new URL(window.location.href);
     url.searchParams.delete('feria');
+    if(/^\/feria\/?$/.test(url.pathname)) url.pathname = '/';
     window.history.replaceState({}, '', url.toString());
   }
 
